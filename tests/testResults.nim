@@ -8,7 +8,7 @@ test "Check OK":
   check test.isOk == true
 
 test "Check fail":
-  let test = fail "no data here"
+  let test = oi.fail[int] "no data here"
   check test.isOk == false
 
 test "Check proc results":
@@ -31,7 +31,7 @@ test "Check changing result":
   proc checker(): OI[int] =
     result = ok 42
     # something happend here
-    result = fail "data got corrupted"
+    result = result.fail "data got corrupted"
 
   let data = checker()
   check data.isOk == false

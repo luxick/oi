@@ -13,5 +13,5 @@ proc ok*[T](val: T): OI[T] =
 proc fail*(oi: OI, msg: string): OI =
   OI(isOK: false, error: msg)
 
-proc fail*(msg: string): OI[auto] =
-  OI[auto](isOK: false, error: msg)
+proc fail*[T](msg: string): OI[T] =
+  OI[T](isOK: false, error: msg)
