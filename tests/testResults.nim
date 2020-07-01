@@ -1,18 +1,18 @@
 # To run these tests, simply execute `nimble test`.
 
 import unittest
-import oi
+import op
 
 test "Check OK":
   let test = ok 1
   check test.isOk == true
 
 test "Check fail":
-  let test = oi.fail[int] "no data here"
+  let test = op.fail[int] "no data here"
   check test.isOk == false
 
 test "Check proc results":
-  proc createValue: OI[string] =
+  proc createValue: OP[string] =
     let myString = "This is test code!"
     ok myString
   let data = createValue()
@@ -20,7 +20,7 @@ test "Check proc results":
   check data.val == "This is test code!"
 
 test "Check failing proc":
-  proc destinedToFail(): OI[int] =
+  proc destinedToFail(): OP[int] =
     result.fail "no data found"
 
   let data = destinedToFail()
@@ -28,7 +28,7 @@ test "Check failing proc":
   check data.error == "no data found"
 
 test "Check changing result":
-  proc checker(): OI[int] =
+  proc checker(): OP[int] =
     result = ok 42
     # something happend here
     result = result.fail "data got corrupted"
