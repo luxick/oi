@@ -9,3 +9,6 @@ srcDir        = "src"
 # Dependencies
 
 requires "nim >= 1.2.4"
+
+task genDocs, "Generate Docs":
+  exec "nim doc --project -o:doc src/op.nim"

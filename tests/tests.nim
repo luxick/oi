@@ -20,12 +20,12 @@ test "Check proc results":
   check data.val == "This is test code!"
 
 test "Check failing proc":
-  proc destinedToFail(): OP[int] =
-    result.fail "no data found"
+  proc someProc(): OP[int] =
+    result.fail "Not implemented!"
 
-  let data = destinedToFail()
-  check data.isOk == false
-  check data.error == "no data found"
+  let data = someProc()
+  assert data.isOk == false
+  assert data.error == "Not implemented!"
 
 test "Check changing result":
   proc checker(): OP[int] =
