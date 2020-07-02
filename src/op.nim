@@ -17,7 +17,7 @@
 ##  proc divide(a, b: int): OP[float] =
 ##    ## This could fail
 ##    if b == 0:
-##      return fail(float, "Cannot divide by zero!")
+##      return fail "Cannot divide by zero!"
 ##    else:
 ##      return ok a / b   # Wrap the result
 ##
@@ -26,8 +26,12 @@
 ##  assert r.error == "Cannot divide by zero!"
 
 type
-  OP*[T] = object of RootObj
-    ## Object to wrap the result of an operation
+  OP*[T] = object
+    ## Object to wrap the result of an operation.
+    ##
+    ## The type is discriminated by the `isOK` bool.
+    ## So it is an compiler error to try to access the value without checking
+    ## if the operation was successful.
     ##
     ## - `isOk`: Indicates if the operation was successful
     ## - `val`: If successful, this will hold the real result value
@@ -38,11 +42,11 @@ type
     of false:
       error*: string
 
-proc ok*[T](val: T): OP[T] =
+proc ok*[T](val: T): OP[T] {.inline.} =
   ## Wraps the given value in a successful operation result.
   OP[T](isOK: true, val: val)
 
-proc fail*(op: OP, msg: string): OP =
+proc fail*(op: OP, msg: string): OP {.inline.} =
   ## Will create a new operation result with the given error message.
   ## The type for the operation result is taken from the `op` argument.
   runnableExamples:
@@ -54,20 +58,17 @@ proc fail*(op: OP, msg: string): OP =
     assert data.error == "Not implemented!"
   OP(isOK: false, error: msg)
 
-proc fail*[T](msg: string): OP[T] =
+proc fail*(T: typedesc, msg: string): OP[T] {.inline.} =
   ## Will create a new operation result with the given error message.
   ## The type for the operation result is given explicitly.
   ##
   ## **See Also:**
-  ## - `fail proc
-  ##   <#fail,OP,string>`_
-  runnableExamples:
-    let res = fail[seq[float]] "Something is wrong!"
-    assert res.isOk == false
-    assert res.error == "Something is wrong!"
+  ## - `fail proc<#fail,OP,string>`_
+  ## - `fail template<#fail.t,static[string]>`_
   OP[T](isOK: false, error: msg)
 
-proc fail*(T: typedesc, msg: string): OP[T] =
-  ## Alias for `fail[T](string)<#fail,string>`_
-  fail[T] msg
+template fail*[T](O: type OP[T], msg: string): O = O(isOK: false, error: msg)
+
+template fail*(msg: static[string]): auto = fail(typeof(result), msg)
+
 
