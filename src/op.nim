@@ -1,7 +1,29 @@
+## :Version: 1.0.0
+## :Author: luxick <op@luxick.de>
+##
+## OP stands for "Operation Result".
+##
 ## This module contains a generic type that can be used as a return type
 ## for operations that could fail. It adds additional messages to the result.
 ##
-## OP stands for "Operation result".
+##
+## This module improves upon the `options module<https://nim-lang.org/docs/options.html>`_
+## in that additional messages can be passed along with the presence or absence of a value.
+##
+## Basic Usage
+## -----------
+## .. code-block:: nim
+##
+##  proc divide(a, b: int): OP[float] =
+##    ## This could fail
+##    if b == 0:
+##      return fail(float, "Cannot divide by zero!")
+##    else:
+##      return ok a / b   # Wrap the result
+##
+##  let r = divide(42, 0)
+##  assert r.isOk == false
+##  assert r.error == "Cannot divide by zero!"
 
 type
   OP*[T] = object of RootObj
@@ -46,6 +68,6 @@ proc fail*[T](msg: string): OP[T] =
   OP[T](isOK: false, error: msg)
 
 proc fail*(T: typedesc, msg: string): OP[T] =
-  ## Alias for `fail[T](string) proc <#fail,string>`_
+  ## Alias for `fail[T](string)<#fail,string>`_
   fail[T] msg
 

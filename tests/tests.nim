@@ -52,3 +52,17 @@ test "Check changing result":
   let data = checker()
   check data.isOk == false
   check data.error == "data got corrupted"
+
+test "Check divider proc":
+  proc divide(a, b: int): OP[float] =
+    if b == 0:
+      return fail(float, "Cannot divide by zero!")
+    else:
+      return ok a / b
+
+  let
+    a = 42
+    b = 0
+  let r = divide(a, b)
+  check r.isOk == false
+  check r.error == "Cannot divide by zero!"
