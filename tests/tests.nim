@@ -19,9 +19,25 @@ test "Check proc results":
   check data.isOk
   check data.val == "This is test code!"
 
-test "Check failing proc":
+test "Check failing result proc":
   proc someProc(): OP[int] =
     result.fail "Not implemented!"
+
+  let data = someProc()
+  assert data.isOk == false
+  assert data.error == "Not implemented!"
+
+test "Check failing typedesc proc ":
+  proc someProc(): OP[int] =
+    fail(int, "Not implemented!")
+
+  let data = someProc()
+  assert data.isOk == false
+  assert data.error == "Not implemented!"
+
+test "Check failing type param proc ":
+  proc someProc(): OP[int] =
+    op.fail[int]("Not implemented!")
 
   let data = someProc()
   assert data.isOk == false

@@ -45,3 +45,7 @@ proc fail*[T](msg: string): OP[T] =
     assert res.error == "Something is wrong!"
   OP[T](isOK: false, error: msg)
 
+proc fail*(T: typedesc, msg: string): OP[T] =
+  ## Alias for `fail[T](string) proc <#fail,string>`_
+  fail[T] msg
+
