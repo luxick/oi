@@ -10,5 +10,9 @@ srcDir        = "src"
 
 requires "nim >= 1.2.4"
 
-task genDocs, "Generate Docs":
+task docs, "Generate Docs":
   exec "nim doc --project -o:doc src/op.nim"
+
+task bench, "Runs the benchmark code":
+  exec "nim c -r benchmarks/bench.nim"
+

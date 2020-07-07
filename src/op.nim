@@ -25,29 +25,30 @@
 ##  assert r.isOk == false
 ##  assert r.error == "Cannot divide by zero!"
 
-import macros
-
 type
   Either*[A, B] = object
-    case isA: bool
+    ## An `Either` object can hold either one value or the other, but never both
+    case isA*: bool
     of true:
-      a: A
+      a*: A
     of false:
-      b: B
+      b*: B
 
   OP*[T] = Either[T, string]
+    ## Object to wrap the result of an operation.
     ## Alias of `Either` with a string as error message
-
+    ##
+    ## The type is discriminated by the `isOK` bool.
+    ## So it is an compiler error to try to access the value without checking
+    ## if the operation was successful.
+    ##
+    ## - `isOk`: Indicates if the operation was successful
+    ## - `val`: If successful, this will hold the real result value
+    ## - `error`: Otherwise this will hold an error message
 
 template checkA*(self: Either): bool = self.isA
 template getA*[A, B](self: Either[A, B]): A = self.a
 template getB*[A, B](self: Either[A, B]): B = self.b
-
-proc newEitherA*[A, B](a: A): Either[A, B] {.inline.} =
-  Either[A, B](isA: true, a: a)
-
-proc newEitherB*[A, B](b: B): Either[A, B] {.inline.} =
-  Either[A, B](isA: false, b: b)
 
 template isOK*(self: OP): bool = checkA(self)
 template val*(self: OP): auto = getA(self)
@@ -55,7 +56,7 @@ template error*(self: OP): auto = getB(self)
 
 template ok*[T](val: T): OP[T] =
   ## Wraps the given value in a successful operation result.
-  newEitherA[T, string](val)
+  OP[T](isA: true, a: val)
 
 template ok*[T](self: var OP[T], val: T) =
   ## Set the result to the given value
@@ -68,7 +69,7 @@ template fail*[T](O: type OP[T], msg: string): O =
   ## **See Also:**
   ## - `fail proc<#fail,OP,string>`_
   ## - `fail template<#fail.t,static[string]>`_
-  newEitherB[T, string](msg)
+  OP[T](isA: false, b: msg)
 
 template fail*(T: typedesc, msg: string): OP[T] =
   ## Will create a new operation result with the given error message.
@@ -77,7 +78,7 @@ template fail*(T: typedesc, msg: string): OP[T] =
   ## **See Also:**
   ## - `fail proc<#fail,OP,string>`_
   ## - `fail template<#fail.t,static[string]>`_
-  newEitherB[T, string](msg)
+  OP[typeof(T)](isA: false, b: msg)
 
 template fail*(op: OP, msg: string): OP =
   ## Will create a new operation result with the given error message.
@@ -90,6 +91,5 @@ template fail*(op: OP, msg: string): OP =
     assert data.isOk == false
     assert data.error == "Not implemented!"
   fail(typeof(op), msg)
-
 
 template fail*(msg: static[string]): auto = fail(typeof(result), msg)

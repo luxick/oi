@@ -15,7 +15,7 @@ suite "Basic tests":
     check test.isOk == true
 
   test "Check fail":
-    let test = fail(void, "no data here")
+    let test = int.fail "no data here"
     check test.isOk == false
 
   test "Check proc results":
