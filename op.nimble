@@ -1,6 +1,6 @@
 # Package
 
-version       = "1.0.0"
+version       = "2.0.1"
 author        = "luxick"
 description   = "Generic result type for operations that can fail."
 license       = "GPL-2.0"
